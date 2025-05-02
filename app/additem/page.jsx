@@ -74,10 +74,11 @@ export default function Additem() {
             required
           >
             <option value="" disabled>Select a category</option>
-            <option value="Vegetables">Vegetables</option>
-            <option value="Fruits">Fruits</option>
-            <option value="Leaves">Leaves</option>
-            <option value="Others">Others</option>
+            <option value="Tools">Tools</option>
+            <option value="Plumbing">Plumbing</option>
+            <option value=" Electrical">Electrical</option>
+            <option value="Construction Materials">Construction Materials</option>
+            <option value="Paints and Accessories">Paints and Accessories</option>
           </select>
         </div>
 
