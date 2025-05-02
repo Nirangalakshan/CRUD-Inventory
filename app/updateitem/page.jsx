@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import Swal from 'sweetalert2';
 
 export default function EditItem() {
   const searchParams = useSearchParams();
@@ -49,13 +50,19 @@ export default function EditItem() {
       });
 
       if (res.ok) {
-        alert('Item updated successfully!');
+        await Swal.fire({
+          icon: 'success',
+          title: 'Success!',
+          text: 'Item updated successfully.',
+          confirmButtonColor: '#3085d6',
+        });
         router.push('/');
       } else {
-        alert('Update failed');
+        Swal.fire('Update Failed', 'Something went wrong while updating.', 'error');
       }
     } catch (error) {
       console.error('Error updating item:', error);
+      Swal.fire('Error', 'Failed to update the item.', 'error');
     }
   };
 
@@ -63,7 +70,9 @@ export default function EditItem() {
 
   return (
     <div style={styles.container}>
-      <h1 className="text-2xl font-bold mb-4" style={styles.title}>Edit Item</h1>
+      <h1 className="text-2xl font-bold mb-4" style={styles.title}>
+        Edit Item
+      </h1>
       <form onSubmit={handleUpdate} style={styles.form}>
         <label style={styles.label}>
           Name
@@ -107,7 +116,9 @@ export default function EditItem() {
           />
         </label>
 
-        <button style={styles.button} type="submit">Update Item</button>
+        <button style={styles.button} type="submit">
+          Update Item
+        </button>
       </form>
     </div>
   );
@@ -127,7 +138,6 @@ const styles = {
     textAlign: 'center',
     color: '#333',
     marginBottom: '2rem',
-    fonnt: 'bold',
   },
   form: {
     display: 'flex',

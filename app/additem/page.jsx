@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from 'react';
-
+import Swal from 'sweetalert2';
 
 export default function Additem() {
   const [itemName, setItemName] = useState('');
@@ -11,19 +11,20 @@ export default function Additem() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    alert(`Item added:
-    - Name: ${itemName}
-    - Category: ${category}
-    - Price: ${price}
-    - Quantity: ${quantity}`);
-    
-    // Reset form
-    setItemName('');
-    setCategory('');
-    setPrice('');
-    setQuantity('');
 
-    try{
+    // Optional: confirm before submit
+    const result = await Swal.fire({
+      title: 'Confirm Add Item?',
+      text: `Add ${itemName} to ${category} category?`,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, Add it!',
+      cancelButtonText: 'Cancel',
+    });
+
+    if (!result.isConfirmed) return;
+
+    try {
       const res = await fetch("http://localhost:3000/api/items", {
         method: "POST",
         headers: {
@@ -35,16 +36,33 @@ export default function Additem() {
           Quantity: quantity,
           Price: price,
         }),
-        
-      })
-    }catch (error) {
-      console.log(error);
-    }
-    if (res.ok) {
-      alert("Item added successfully!");
-    }
-    else {
-      alert("Failed to add item.");
+      });
+
+      if (res.ok) {
+        await Swal.fire({
+          icon: 'success',
+          title: 'Item Added!',
+          text: `${itemName} added successfully.`,
+        });
+        // Reset form
+        setItemName('');
+        setCategory('');
+        setPrice('');
+        setQuantity('');
+      } else {
+        await Swal.fire({
+          icon: 'error',
+          title: 'Failed!',
+          text: 'Item could not be added.',
+        });
+      }
+    } catch (error) {
+      console.error(error);
+      await Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'An error occurred while adding the item.',
+      });
     }
   };
 
@@ -52,7 +70,6 @@ export default function Additem() {
     <div className="max-w-xl mx-auto mt-10 bg-white shadow-md rounded-lg p-6">
       <h1 className="text-2xl font-bold mb-4 text-gray-800">Add New Item</h1>
       <form onSubmit={handleSubmit} className="space-y-4">
-        
         <div>
           <label className="block text-gray-700">Item Name</label>
           <input
@@ -76,7 +93,7 @@ export default function Additem() {
             <option value="" disabled>Select a category</option>
             <option value="Tools">Tools</option>
             <option value="Plumbing">Plumbing</option>
-            <option value=" Electrical">Electrical</option>
+            <option value="Electrical">Electrical</option>
             <option value="Construction Materials">Construction Materials</option>
             <option value="Paints and Accessories">Paints and Accessories</option>
           </select>

@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import Swal from "sweetalert2";
 
 export default function InventoryTable() {
   const router = useRouter();
@@ -24,15 +25,31 @@ export default function InventoryTable() {
   }, []);
 
   const deleteItem = async (id) => {
-    try {
-      const res = await fetch(`/api/items?id=${id}`, {
-        method: "DELETE",
-      });
-      if (!res.ok) throw new Error("Failed to delete item");
-      const updatedItems = items.filter((item) => item._id !== id);
-      setItems(updatedItems); // update UI immediately
-    } catch (error) {
-      console.error(error);
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "This item will be permanently deleted!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Yes, delete it!",
+    });
+
+    if (result.isConfirmed) {
+      try {
+        const res = await fetch(`/api/items?id=${id}`, {
+          method: "DELETE",
+        });
+
+        if (!res.ok) throw new Error("Failed to delete item");
+
+        setItems(items.filter((item) => item._id !== id));
+
+        Swal.fire("Deleted!", "The item has been deleted.", "success");
+      } catch (error) {
+        console.error(error);
+        Swal.fire("Error!", "There was a problem deleting the item.", "error");
+      }
     }
   };
 
